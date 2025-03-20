@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Products;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 
@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Products::all();
+        $products = Product::all();
         return response()->json($products);
     }
 
@@ -24,7 +24,7 @@ class ProductController extends Controller
      */
     public function getProductsByCategory(string $category)
     {
-        $products = Products::whereHas('category', function ($query) use ($category) {
+        $products = Product::whereHas('category', function ($query) use ($category) {
             $query->where('name', $category);
         })->get();
         return response()->json(['products' => $products,'number_of_products' => $products->count()]);
