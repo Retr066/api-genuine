@@ -26,4 +26,23 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es requerido',
+            'name.string' => 'El nombre debe ser un texto',
+            'name.max' => 'El nombre no debe exceder los 255 caracteres',
+            'description.required' => 'La descripción es requerida',
+            'description.string' => 'La descripción debe ser un texto',
+            'quantity.required' => 'La cantidad es requerida',
+            'quantity.integer' => 'La cantidad debe ser un número entero',
+            'quantity.min' => 'La cantidad no debe ser menor a 0',
+            'category_id.required' => 'La categoría es requerida',
+            'category_id.exists' => 'La categoría seleccionada no existe',
+        ];
+    }
 }

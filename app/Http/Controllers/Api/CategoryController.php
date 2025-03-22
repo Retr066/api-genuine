@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\HandlerError;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -15,22 +19,17 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return response()->json([
-            'message'=> 'Listado de categorías',
-            'data'=> $categories
-        ], 200);   
+        return ResponseHelper::success($categories, 'Categorías encontradas');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create($request->all());
-        return response()->json([
-            'message'=> 'Categoría creada',
-            'data'=> $category
-        ], 201);
+        $validated = $request->validated();
+        $category = Category::create($validated);
+        return ResponseHelper::success($category, 'Categoría creada', 201);
     }
 
     /**
@@ -38,24 +37,27 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::findOrFail($id);
-        return response()->json([
-            'message'=> 'Categoría encontrada',
-            'data'=> $category
-        ], 200);
+        $category = Category::find($id);
+
+        if(!$category){
+            throw new HandlerError('Categoría no encontrada', 404);
+        }
+
+        return ResponseHelper::success($category, 'Categoría encontrada');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
-        return response()->json([
-            'message'=> 'Categoría actualizada',
-            'data'=> $category
-        ], 200);
+        $validated = $request->validated();
+        $category = Category::find($id);
+        if(!$category){
+            throw new HandlerError('Categoría no encontrada', 404);
+        }
+        $category->update($validated);
+        return ResponseHelper::success($category, 'Categoría actualizada');
     }
 
     /**
@@ -63,11 +65,11 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
+        if(!$category){
+            throw new HandlerError('Categoría no encontrada', 404);
+        }
         $category->delete();
-        return response()->json([
-            'message'=> 'Categoría eliminada',
-            'data'=> $category
-        ], 200);
+        return ResponseHelper::success(null, 'Categoría eliminada');
     }
 }

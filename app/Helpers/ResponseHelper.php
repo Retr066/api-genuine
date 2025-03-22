@@ -14,13 +14,4 @@ class ResponseHelper
             'message' => $message,
         ], $statusCode);
     }
-
-    public static function error(string $message = '', int $statusCode = 404, $errors = null): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => $message,
-            'errors' => $errors,
-        ], $statusCode);
-    }
 }

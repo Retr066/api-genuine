@@ -8,9 +8,6 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
 
 
-
-
-
 class ProductController extends Controller
 {
     /**
@@ -46,6 +43,13 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
+
+        if (!$validated) {
+            return response()->json([
+                'message'=> 'Datos inválidos',
+                'data'=> $validated
+            ], 400);
+        }
     
         // Crear el producto con los datos validados
         $product = Product::create($validated);
@@ -55,6 +59,7 @@ class ProductController extends Controller
             'data'=> $product
         ], 201);
     }
+
     public function update(UpdateProductRequest $request, string $id)
     {
         $validated = $request->validated();
@@ -95,6 +100,8 @@ class ProductController extends Controller
             'data'=> $product
         ], 200);
     }
+
+    
 
 
     /**
