@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\HandlerError;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 
 
@@ -16,10 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return response()->json([
-            'message'=> 'Listado de productos',
-            'data'=> $products
-        ], 200);
+        return ResponseHelper::success($products, 'Productos encontrados');
     }
 
     public function show(string $id)
@@ -27,16 +27,10 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json([
-                'message'=> 'Producto no encontrado',
-                'data'=> null
-            ], 404);
+            throw new HandlerError('Producto no encontrado', 404);
         }
 
-        return response()->json([
-            'message'=> 'Producto encontrado',
-            'data'=> $product
-        ], 200);
+        return ResponseHelper::success($product, 'Producto encontrado');
     }
 
 
@@ -44,20 +38,9 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
 
-        if (!$validated) {
-            return response()->json([
-                'message'=> 'Datos inválidos',
-                'data'=> $validated
-            ], 400);
-        }
-    
-        // Crear el producto con los datos validados
         $product = Product::create($validated);
     
-        return response()->json([
-            'message'=> 'Producto creado',
-            'data'=> $product
-        ], 201);
+        return ResponseHelper::success($product, 'Producto creado', 201);
     }
 
     public function update(UpdateProductRequest $request, string $id)
@@ -67,17 +50,11 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json([
-                'message'=> 'Producto no encontrado',
-                'data'=> null
-            ], 404);
+            throw new HandlerError('Producto no encontrado', 404);
         }
 
         $product->update($validated);
-        return response()->json([
-            'message'=> 'Producto actualizado',
-            'data'=> $product
-        ], 200);
+        return ResponseHelper::success($product, 'Producto actualizado');
     }
 
     /**
@@ -88,17 +65,11 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json([
-                'message'=> 'Producto no encontrado',
-                'data'=> null
-            ], 404);
+            throw new HandlerError('Producto no encontrado', 404);
         }
 
         $product->delete();
-        return response()->json([
-            'message'=> 'Producto eliminado',
-            'data'=> $product
-        ], 200);
+        return ResponseHelper::success(null, 'Producto eliminado');
     }
 
     
@@ -109,10 +80,19 @@ class ProductController extends Controller
      */
     public function getProductsByCategory(string $category)
     {
+        $found_category = Category::where('name', $category)->first();
+
+        if (!$found_category) {
+            throw new HandlerError('Categoría no encontrada', 404);
+        }
         $products = Product::whereHas('category', function ($query) use ($category) {
             $query->where('name', $category);
         })->get();
-        return response()->json(['products' => $products,'number_of_products' => $products->count()]);
+        
+        return ResponseHelper::success([
+            'products' => $products,
+            'number_of_products' => $products->count()
+        ], 'Productos encontrados');
     }
 
 }
