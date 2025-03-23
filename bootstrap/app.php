@@ -5,6 +5,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -50,6 +51,14 @@ return Application::configure(basePath: dirname(__DIR__))
                         'success' => false,
                         'message' => 'Ruta no encontrada.',
                     ], 404);
+                }
+
+                if($e instanceof ValidationException){
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Error de validación.',
+                        'errors' => $e->errors(),
+                    ], 422);
                 }
     
                 // Capturar otros errores desconocidos
