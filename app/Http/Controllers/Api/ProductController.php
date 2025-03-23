@@ -10,6 +10,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class ProductController extends Controller
@@ -83,6 +84,8 @@ class ProductController extends Controller
     {
         $category =  strtolower($request->input('queryResult.parameters.category'));
 
+        
+        Log::info('Category: ' . $category);
 
         if (!$category) {
             return response()->json([
