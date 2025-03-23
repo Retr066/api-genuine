@@ -81,7 +81,8 @@ class ProductController extends Controller
      */
     public function dialogflowWebhook(Request $request)
     {
-        $category = $request->input('queryResult.parameters.category');
+        $category =  strtolower($request->input('queryResult.parameters.category'));
+
 
         if (!$category) {
             return response()->json([

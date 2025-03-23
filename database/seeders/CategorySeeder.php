@@ -13,16 +13,18 @@ class CategorySeeder extends Seeder
      */
     /** @var array<string> */
     private array $categories  = [
-        'Electronics',
-        'Clothing',
-        'Books',
-        'Home & Kitchen',
-        'Beauty & Health',
-        'Sports & Outdoors',
-        'Toys & Games',
-        'Automotive',
-        'Grocery',
-        'Movies & TV Shows',
+        'Electronica',
+        'Hogar',
+        'Deportes',
+        'Moda',
+        'Juguetes',
+        'Mascotas',
+        'Libros',
+        'Salud',
+        'Belleza',
+        'Jardineria',
+        'Automoviles',
+        'Musica',
     ];
 
     public function run(): void
