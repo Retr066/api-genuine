@@ -9,6 +9,7 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 
 class ProductController extends Controller
@@ -78,21 +79,29 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getProductsByCategory(string $category)
+    public function dialogflowWebhook(Request $request)
     {
-        $found_category = Category::where('name', $category)->first();
+        $category = $request->input('queryResult.parameters.category');
 
-        if (!$found_category) {
-            throw new HandlerError('Categoría no encontrada', 404);
+        if (!$category) {
+            return response()->json([
+                'fulfillmentText' => "No entendí la categoría. ¿Podrías repetirla?"
+            ]);
         }
-        $products = Product::whereHas('category', function ($query) use ($category) {
-            $query->where('name', $category);
-        })->get();
-        
-        return ResponseHelper::success([
-            'products' => $products,
-            'number_of_products' => $products->count()
-        ], 'Productos encontrados');
+
+        $foundCategory = Category::where('name', $category)->first();
+
+        if (!$foundCategory) {
+            return response()->json([
+                'fulfillmentText' => "Categoría no encontrada"
+            ]);
+        }
+
+        $productCount = Product::where('category_id', $foundCategory->id)->sum('quantity');
+
+        return response()->json([
+            'fulfillmentText' => "La categoría $category tiene $productCount productos disponibles."
+        ]);
     }
 
 }

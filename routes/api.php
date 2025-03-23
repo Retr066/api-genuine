@@ -10,8 +10,6 @@ Route::group(['prefix' => 'products', 'controller' => ProductController::class],
     Route::post('/', 'store')->where('id', '[0-9]+');
     Route::put('/{id}', 'update')->where('id', '[0-9]+');   
     Route::delete('/{id}', 'destroy')->where('id', '[0-9]+');
-    Route::get('/category/{category}', 'getProductsByCategory')
-        ->where('category', '[A-Za-z]+');
 });
 
 Route::group(['prefix' => 'categories', 'controller' => CategoryController::class], function () {
@@ -21,3 +19,6 @@ Route::group(['prefix' => 'categories', 'controller' => CategoryController::clas
     Route::put('/{id}', 'update')->where('id', '[0-9]+');
     Route::delete('/{id}', 'destroy')->where('id', '[0-9]+');
 });
+
+
+Route::post('/dialogflow-webhook', [ProductController::class, 'dialogflowWebhook']);
